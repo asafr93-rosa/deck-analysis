@@ -1,0 +1,152 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --color-bg-page: #0D1117;
+  --color-bg-card: #161B22;
+  --color-accent: #00D4AA;
+  --color-border: rgba(255, 255, 255, 0.08);
+  --color-text-primary: #E6EDF3;
+  --color-text-secondary: #7D8590;
+}
+
+* { box-sizing: border-box; }
+
+html {
+  background-color: #0D1117;
+  color: #E6EDF3;
+  font-family: "Inter", ui-sans-serif, system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  height: 100dvh;
+  overflow: hidden;
+}
+
+body {
+  margin: 0;
+  height: 100dvh;
+  overflow: hidden;
+  background-color: #0D1117;
+}
+
+#root {
+  height: 100dvh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: #0D1117; }
+::-webkit-scrollbar-thumb { background: #30363D; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #00D4AA; }
+
+/* ── Markdown / Analysis prose ─────────────────────────────── */
+
+.prose-analysis {
+  color: #E6EDF3;
+  font-size: 0.875rem;
+  line-height: 1.7;
+}
+
+.prose-analysis h1,
+.prose-analysis h2 {
+  color: #00D4AA;
+  font-weight: 600;
+  margin-top: 1.5em;
+  margin-bottom: 0.5em;
+  padding-bottom: 0.25em;
+  border-bottom: 1px solid rgba(0, 212, 170, 0.15);
+}
+
+.prose-analysis h1 { font-size: 1.05rem; }
+.prose-analysis h2 { font-size: 0.95rem; }
+.prose-analysis h3 {
+  font-size: 0.875rem;
+  color: #E6EDF3;
+  font-weight: 600;
+  margin-top: 1em;
+  margin-bottom: 0.25em;
+}
+
+.prose-analysis p { margin: 0.5em 0; }
+
+.prose-analysis ul,
+.prose-analysis ol {
+  padding-left: 1.4em;
+  margin: 0.4em 0;
+}
+
+.prose-analysis li { margin: 0.3em 0; }
+
+.prose-analysis strong { color: #E6EDF3; font-weight: 600; }
+
+.prose-analysis em { color: #7D8590; }
+
+.prose-analysis hr {
+  border: none;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  margin: 1.25em 0;
+}
+
+.prose-analysis table {
+  border-collapse: collapse;
+  width: 100%;
+  margin: 0.8em 0;
+  font-size: 0.82rem;
+}
+
+.prose-analysis th {
+  background: #0D1117;
+  color: #00D4AA;
+  padding: 7px 12px;
+  text-align: left;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  font-weight: 600;
+}
+
+.prose-analysis td {
+  padding: 6px 12px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: #E6EDF3;
+  vertical-align: top;
+}
+
+.prose-analysis tr:nth-child(even) td {
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.prose-analysis tr:last-child td {
+  font-weight: 600;
+  color: #00D4AA;
+  background: rgba(0, 212, 170, 0.05);
+}
+
+.prose-analysis code {
+  background: #0D1117;
+  padding: 1px 5px;
+  border-radius: 4px;
+  font-size: 0.85em;
+  color: #00D4AA;
+  font-family: ui-monospace, monospace;
+}
+
+.prose-analysis blockquote {
+  border-left: 3px solid #00D4AA;
+  padding-left: 0.8em;
+  margin: 0.5em 0;
+  color: #7D8590;
+}
+
+/* ── Animations ─────────────────────────────────────────────── */
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.animate-fade-in { animation: fadeIn 0.3s ease both; }
+.animate-spin { animation: spin 0.8s linear infinite; }
