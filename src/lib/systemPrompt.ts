@@ -105,6 +105,8 @@ Score each criterion 0–10, then calculate the weighted total.
 | Pitch Quality & Clarity           | 8%     | X            | X              |
 | **TOTAL**                         | 100%   |              | **XX / 100**   |
 
+(Replace XX with the rounded whole number — e.g. **74 / 100**, not 74.3 / 100)
+
 ---
 
 ## 🏁 Final Verdict

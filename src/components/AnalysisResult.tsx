@@ -41,9 +41,11 @@ function parseResult(md: string): ParsedResult {
   const missingSec  = find(['missing', '❓'])
   const verdictSec  = find(['verdict', '🏁', 'final verdict'])
 
-  // Score — look for **XX / 100** or **XX/100** in the table
-  const scoreMatch = md.match(/\*\*(\d{1,3})\s*\/\s*100\*\*/)
-  const score = scoreMatch ? Math.min(100, Math.max(0, parseInt(scoreMatch[1]))) : 0
+  // Score — handles integers and decimals: **74 / 100** or **72.4 / 100** or **72.4/100**
+  const scoreMatch = md.match(/\*\*(\d{1,3}(?:[.,]\d+)?)\s*\/\s*100\*\*/)
+  const score = scoreMatch
+    ? Math.min(100, Math.max(0, Math.round(parseFloat(scoreMatch[1].replace(',', '.')))))
+    : 0
 
   // Verdict type
   let verdict: ParsedResult['verdict'] = 'watch'
