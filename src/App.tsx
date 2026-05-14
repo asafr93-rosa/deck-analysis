@@ -1,87 +1,75 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useAnalysis } from './hooks/useAnalysis'
 import { DeckUploader } from './components/DeckUploader'
+import { LoadingScreen } from './components/LoadingScreen'
 import { AnalysisResult } from './components/AnalysisResult'
+
+const STAGES = [
+  'Reading deck...',
+  'Evaluating market fit...',
+  'Scoring criteria...',
+  'Generating insights...',
+]
+const STAGE_DELAYS = [0, 5000, 11000, 18000]
 
 export default function App() {
   const { state, analyze, reset } = useAnalysis()
-  const [currentFile, setCurrentFile] = useState<File | null>(null)
+  const [activeStage, setActiveStage] = useState(0)
 
-  function handleFile(file: File) {
-    setCurrentFile(file)
-    void analyze(file)
-  }
-
-  function handleReset() {
-    setCurrentFile(null)
-    reset()
-  }
-
-  const showResult = state.status === 'analyzing' || state.status === 'done'
+  useEffect(() => {
+    if (state.status !== 'analyzing') return
+    setActiveStage(0)
+    const timers = STAGE_DELAYS.slice(1).map((delay, i) =>
+      setTimeout(() => setActiveStage(i + 1), delay),
+    )
+    return () => timers.forEach(clearTimeout)
+  }, [state.status])
 
   return (
-    <div className="flex flex-col h-dvh bg-[#0D1117] overflow-hidden">
-      {/* Header */}
-      <header className="shrink-0 flex items-center justify-between px-5 py-4 border-b border-white/8">
-        <div className="flex items-center gap-2.5">
-          <div className="flex items-center justify-center w-7 h-7 rounded-lg bg-[#00D4AA]/10 border border-[#00D4AA]/20">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#00D4AA" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <line x1="18" y1="20" x2="18" y2="10"/>
-              <line x1="12" y1="20" x2="12" y2="4"/>
-              <line x1="6" y1="20" x2="6" y2="14"/>
-            </svg>
-          </div>
-          <span className="text-sm font-semibold text-[#E6EDF3]">Deck Analysis</span>
-        </div>
-        {currentFile && showResult && (
-          <span className="text-xs text-[#7D8590] truncate max-w-[160px]" title={currentFile.name}>
-            {currentFile.name}
-          </span>
-        )}
-      </header>
+    <div className="min-h-dvh bg-white flex flex-col">
+      <main className="flex-1 flex flex-col items-center px-5 py-12">
+        <div className="w-full max-w-[680px]">
 
-      {/* Main */}
-      <main className="flex-1 overflow-hidden flex flex-col">
-        {/* IDLE */}
-        {state.status === 'idle' && (
-          <div className="flex-1 flex flex-col items-center justify-center px-5 pb-10">
-            <div className="w-full max-w-md space-y-5">
-              <div className="text-center space-y-1">
-                <h2 className="text-base font-semibold text-[#E6EDF3]">Upload a Pitch Deck</h2>
-                <p className="text-sm text-[#7D8590]">Get structured VC-grade feedback in seconds</p>
+          {state.status === 'idle' && (
+            <div className="animate-fade-in">
+              <div className="text-center mb-10">
+                <p className="text-xs font-semibold text-[#4A5568] tracking-[0.12em] uppercase mb-5">
+                  HiCenter · Deck Analyzer
+                </p>
+                <h1 className="text-[34px] font-bold text-[#1B3A6B] leading-tight mb-3">
+                  Evaluate Any Pitch Deck
+                </h1>
+                <p className="text-[#4A5568] text-base max-w-md mx-auto">
+                  Upload a PDF and get structured VC-grade feedback in seconds.
+                </p>
               </div>
-              <DeckUploader onFile={handleFile} />
+              <DeckUploader onFile={file => void analyze(file)} />
             </div>
-          </div>
-        )}
+          )}
 
-        {/* ANALYZING / DONE */}
-        {showResult && (
-          <div className="flex-1 overflow-hidden flex flex-col px-5 py-5">
-            <AnalysisResult
-              markdown={state.markdown}
-              isStreaming={state.status === 'analyzing'}
-              onReset={handleReset}
-            />
-          </div>
-        )}
+          {state.status === 'analyzing' && (
+            <LoadingScreen stages={STAGES} activeStage={activeStage} />
+          )}
 
-        {/* ERROR */}
-        {state.status === 'error' && (
-          <div className="flex-1 flex flex-col items-center justify-center px-5 pb-10">
-            <div className="w-full max-w-md space-y-4">
-              <div className="rounded-xl px-4 py-3 bg-red-400/8 border border-red-400/20">
-                <p className="text-sm text-red-400">{state.error}</p>
+          {state.status === 'done' && (
+            <AnalysisResult markdown={state.markdown} onReset={reset} />
+          )}
+
+          {state.status === 'error' && (
+            <div className="animate-fade-in text-center space-y-5 pt-20">
+              <div className="rounded-2xl px-5 py-4 bg-red-50 border border-red-200">
+                <p className="text-sm text-red-600">{state.error}</p>
               </div>
               <button
-                onClick={handleReset}
-                className="w-full text-sm py-2.5 rounded-xl bg-[#00D4AA]/10 border border-[#00D4AA]/20 text-[#00D4AA] hover:bg-[#00D4AA]/20 transition-colors cursor-pointer"
+                onClick={reset}
+                className="px-6 py-2.5 rounded-xl bg-[#1B3A6B] text-white text-sm font-semibold hover:bg-[#152e56] transition-colors cursor-pointer"
               >
                 Try Again
               </button>
             </div>
-          </div>
-        )}
+          )}
+
+        </div>
       </main>
     </div>
   )
