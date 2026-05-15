@@ -1,0 +1,7 @@
+{
+  "functions": {
+    "api/upload-to-drive.ts": {
+      "maxDuration": 60
+    }
+  }
+}

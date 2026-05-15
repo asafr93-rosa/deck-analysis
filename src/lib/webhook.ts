@@ -1,24 +1,19 @@
 const WEBHOOK_URL = 'https://hook.eu2.make.com/lm4fgtv03sdhjmggal8mjq9a54h5o712'
 
-export async function uploadFileForLink(file: File): Promise<string | null> {
+export async function uploadFileToDrive(
+  fileName: string,
+  fileBase64: string,
+  mimeType: string,
+): Promise<string | null> {
   try {
-    const serverRes = await fetch('https://api.gofile.io/getServer')
-    if (!serverRes.ok) return null
-    const serverData = await serverRes.json() as { status: string; data: { server: string } }
-    if (serverData.status !== 'ok') return null
-
-    const formData = new FormData()
-    formData.append('file', file)
-
-    const uploadRes = await fetch(`https://${serverData.data.server}.gofile.io/uploadFile`, {
+    const res = await fetch('/api/upload-to-drive', {
       method: 'POST',
-      body: formData,
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ fileName, fileBase64, mimeType }),
     })
-    if (!uploadRes.ok) return null
-    const uploadData = await uploadRes.json() as { status: string; data: { downloadPage: string } }
-    if (uploadData.status !== 'ok') return null
-
-    return uploadData.data.downloadPage
+    if (!res.ok) return null
+    const data = await res.json() as { url?: string }
+    return data.url ?? null
   } catch {
     return null
   }

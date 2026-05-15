@@ -1,7 +1,7 @@
 import { useState, useCallback } from 'react'
 import Anthropic from '@anthropic-ai/sdk'
 import { SYSTEM_PROMPT } from '../lib/systemPrompt'
-import { uploadFileForLink, fireWebhook } from '../lib/webhook'
+import { uploadFileToDrive, fireWebhook } from '../lib/webhook'
 
 type AnalysisStatus = 'idle' | 'analyzing' | 'done' | 'error'
 
@@ -37,10 +37,9 @@ export function useAnalysis() {
     setState({ status: 'analyzing', markdown: '', error: null })
 
     try {
-      // Upload file for sharing link concurrently with the analysis
-      const uploadPromise = uploadFileForLink(file)
-
+      // Base64 is needed for both Claude and Drive upload — compute once
       const base64 = await fileToBase64(file)
+      const uploadPromise = uploadFileToDrive(file.name, base64, file.type || 'application/pdf')
 
       const client = new Anthropic({
         apiKey: import.meta.env.VITE_ANTHROPIC_API_KEY,
