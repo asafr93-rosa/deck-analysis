@@ -69,7 +69,7 @@ function parseScorecard(md: string): Record<string, number> {
 }
 
 function parseCompanyName(md: string): string {
-  const match = md.match(/^\*\*Company:\*\*\s*(.+)/m)
+  const match = md.match(/\*\*Company:\*\*\s*([^\n\r]+)/)
   return match ? match[1].trim() : ''
 }
 
