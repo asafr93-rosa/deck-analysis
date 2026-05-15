@@ -64,6 +64,8 @@ Beyond HiCenter's 9 criteria, also assess:
 OUTPUT FORMAT — follow this exactly
 ─────────────────────────────────────
 
+**Company:** [the startup's exact name as it appears in the deck]
+
 ## 🏢 Company Overview
 2–3 sentences: what the startup does, who it serves, and which HiCenter criteria are most prominently addressed.
 

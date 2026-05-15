@@ -68,6 +68,11 @@ function parseScorecard(md: string): Record<string, number> {
   return scorecard
 }
 
+function parseCompanyName(md: string): string {
+  const match = md.match(/^\*\*Company:\*\*\s*(.+)/m)
+  return match ? match[1].trim() : ''
+}
+
 function parseScore(md: string): number {
   const match = md.match(/\*\*(\d{1,3}(?:[.,]\d+)?)\s*\/\s*100\*\*/)
   if (!match) return 0
@@ -91,6 +96,7 @@ export async function fireWebhook(params: {
     const verdictSection = extractSection(markdown, ['final verdict', 'verdict', '🏁'])
 
     const payload = {
+      company_name: parseCompanyName(markdown),
       file_name: fileName,
       file_url: fileUrl ?? 'unavailable',
       analyzed_at: new Date().toISOString(),
