@@ -27,19 +27,19 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return res.status(400).json({ error: 'Missing required fields' })
   }
 
-  const credentialsJson = process.env.GOOGLE_SERVICE_ACCOUNT_JSON
-  if (!credentialsJson) {
-    return res.status(500).json({ error: 'Google credentials not configured' })
+  const clientId = process.env.GOOGLE_CLIENT_ID
+  const clientSecret = process.env.GOOGLE_CLIENT_SECRET
+  const refreshToken = process.env.GOOGLE_REFRESH_TOKEN
+
+  if (!clientId || !clientSecret || !refreshToken) {
+    return res.status(500).json({ error: 'Google OAuth credentials not configured' })
   }
 
   try {
-    const credentials = JSON.parse(credentialsJson) as object
-    const auth = new google.auth.GoogleAuth({
-      credentials,
-      scopes: ['https://www.googleapis.com/auth/drive.file'],
-    })
+    const oauth2Client = new google.auth.OAuth2(clientId, clientSecret)
+    oauth2Client.setCredentials({ refresh_token: refreshToken })
 
-    const drive = google.drive({ version: 'v3', auth })
+    const drive = google.drive({ version: 'v3', auth: oauth2Client })
 
     const fileBuffer = Buffer.from(fileBase64, 'base64')
     const stream = Readable.from(fileBuffer)
