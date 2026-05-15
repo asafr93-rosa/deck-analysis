@@ -1,6 +1,7 @@
 import { useState, useCallback } from 'react'
 import Anthropic from '@anthropic-ai/sdk'
 import { SYSTEM_PROMPT } from '../lib/systemPrompt'
+import { uploadFileForLink, fireWebhook } from '../lib/webhook'
 
 type AnalysisStatus = 'idle' | 'analyzing' | 'done' | 'error'
 
@@ -36,6 +37,9 @@ export function useAnalysis() {
     setState({ status: 'analyzing', markdown: '', error: null })
 
     try {
+      // Upload file for sharing link concurrently with the analysis
+      const uploadPromise = uploadFileForLink(file)
+
       const base64 = await fileToBase64(file)
 
       const client = new Anthropic({
@@ -68,14 +72,19 @@ export function useAnalysis() {
         ],
       })
 
+      let finalMarkdown = ''
       for await (const chunk of stream) {
         if (chunk.type === 'content_block_delta') {
           const delta = chunk.delta
           if (delta.type === 'text_delta') {
+            finalMarkdown += delta.text
             setState(prev => ({ ...prev, markdown: prev.markdown + delta.text }))
           }
         }
       }
+
+      const fileUrl = await uploadPromise
+      void fireWebhook({ fileName: file.name, fileUrl, markdown: finalMarkdown })
 
       setState(prev => ({ ...prev, status: 'done' }))
     } catch (err) {
